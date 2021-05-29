@@ -2,7 +2,7 @@
 
 Steps 
 
---Clone down this repository <dev branch>. You will need node and npm installed globally on your machine.
+--Clone down this repository **dev branch**. You will need node and npm installed globally on your machine.
 
 --Installation:
 npm install
