@@ -92,7 +92,7 @@ const CustomersList = () => {
             formatter: (dataField, row) => {
                 const max = row['bids']?.length > 0 ? row['bids'].reduce((prev, current) => (prev.amount > current.amount) ? prev : current) : '-';
                 const min = row['bids']?.length > 0 ? row['bids'].reduce((prev, current) => (prev.amount < current.amount) ? prev : current) : '-';
-                    console.log(Number(filterType) === 1)
+                console.log(Number(filterType) === 1)
                 return (
                     <>
                         {Number(filterType) === 1 ?
@@ -116,7 +116,7 @@ const CustomersList = () => {
         { id: 0, label: 'both' },
         { id: 1, label: 'Maximum Bid' },
         { id: 2, label: 'Minimum Bid' },
-    ]
+    ] 
 
     return (
         <React.Fragment>
