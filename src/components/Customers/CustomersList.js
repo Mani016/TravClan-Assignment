@@ -8,12 +8,13 @@ import {
 } from 'reactstrap';
 import agent from '../../agent';
 import { Redirect } from 'react-router-dom';
+import CustomerContext from '../../context';
 const CustomersList = () => {
     const [customersList, setCustomersList] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [filterType, setFilterType] = React.useState('');
     const [redirect, setRedirect] = React.useState(false);
-    const [custDetails, setCustDetails] = React.useState({});
+    const { custDetails, setCustDetails } = React.useContext(CustomerContext);
     React.useEffect(() => {
         setLoading(true)
         agent.Customers.list().then((res) => {
@@ -125,9 +126,7 @@ const CustomersList = () => {
     }
     if (redirect) {
         return <Redirect to={{
-            pathname: `/customer-detail/${custDetails['id']}`, state: {
-                custDetails: custDetails
-            }
+            pathname: `/customer-detail/${custDetails['id']}`
         }} />
     }
     const FiltersList = [

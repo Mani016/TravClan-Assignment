@@ -1,19 +1,18 @@
 import moment from 'moment';
 import React from 'react';
-import { Redirect, useLocation } from 'react-router';
+import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import CustomerContext from '../../context';
 const CustomerDetails = () => {
-    const location = useLocation();
     const [redirect, setRedirect] = React.useState(false);
     const [bidsList, setBidsList] = React.useState([]);
-    const [custDetails, setCustDetails] = React.useState({});
+    const { custDetails } = React.useContext(CustomerContext);
     React.useEffect(() => {
         let isActive = true;
         if (isActive) {
-            if (location.state) {
-                setCustDetails(location.state.custDetails);
-                setBidsList(location.state.custDetails['bids'])
+            if (custDetails) {
+                setBidsList(custDetails['bids'])
             }
             else {
                 setRedirect(true)
@@ -22,7 +21,7 @@ const CustomerDetails = () => {
         return () => {
             isActive = false;
         }
-    }, [location.state])
+    }, [])
     if (redirect) {
         return <Redirect to="/customer" />
     }
@@ -56,7 +55,7 @@ const CustomerDetails = () => {
                     {
                         bidsList && bidsList.map((item, index) => (
                             <Col lg={3} md={6} xs={12} key={index}>
-                                <Card  className="m-3">
+                                <Card className="m-3">
                                     <CardHeader>
                                         <div>{item.carTitle}</div>
                                     </CardHeader>
