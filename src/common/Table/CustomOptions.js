@@ -17,7 +17,7 @@ export function pageButtonRenderer({
   };
   return (
     <Button
-      color={active ? 'primary' : 'falcon-default'}
+      color={active ? 'primary' : 'travclan-default'}
       size="sm"
       className="ml-2 mt-2"
       onClick={handleClick}

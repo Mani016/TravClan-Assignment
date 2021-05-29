@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 const CustomerDetails = () => {
     const location = useLocation();
-    const [custId, setCustId] = React.useState('');
     const [redirect, setRedirect] = React.useState(false);
     const [bidsList, setBidsList] = React.useState([]);
     const [custDetails, setCustDetails] = React.useState({});
@@ -13,7 +12,6 @@ const CustomerDetails = () => {
         let isActive = true;
         if (isActive) {
             if (location.state) {
-                setCustId(location.state.custId);
                 setCustDetails(location.state.custDetails);
                 setBidsList(location.state.custDetails['bids'])
             }
@@ -25,14 +23,13 @@ const CustomerDetails = () => {
             isActive = false;
         }
     }, [location.state])
-    console.log(custId, bidsList)
     if (redirect) {
         return <Redirect to="/customer" />
     }
     return (
         <React.Fragment>
             <div className="m-2 d-flex justify-content-end">
-                <Button className="btn-falcon-primary" tag={Link} to="/customer"><i className="fa fa-arrow-left" />&nbsp;Back</Button>
+                <Button className="btn-travclan-primary" tag={Link} to="/customer"><i className="fa fa-arrow-left" />&nbsp;Back</Button>
             </div>
             <div className="d-flex justify-content-center">
                 <Card className="border">
@@ -58,8 +55,8 @@ const CustomerDetails = () => {
                 <Row >
                     {
                         bidsList && bidsList.map((item, index) => (
-                            <Col lg={3} md={6} xs={12}>
-                                <Card key={index} className="m-3">
+                            <Col lg={3} md={6} xs={12} key={index}>
+                                <Card  className="m-3">
                                     <CardHeader>
                                         <div>{item.carTitle}</div>
                                     </CardHeader>

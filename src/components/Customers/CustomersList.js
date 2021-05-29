@@ -3,26 +3,23 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import paginationFactory, { PaginationProvider } from 'react-bootstrap-table2-paginator';
 import { pageButtonRenderer, customTotal, MySearch, MyExportCSV } from '../../common/Table/CustomOptions';
-import { Card, CardHeader, Input } from 'reactstrap';
+import {
+    Card, CardHeader, Input
+} from 'reactstrap';
 import agent from '../../agent';
-import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 const CustomersList = () => {
     const [customersList, setCustomersList] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [filterType, setFilterType] = React.useState('');
+    const [redirect, setRedirect] = React.useState(false);
+    const [custDetails, setCustDetails] = React.useState({});
     React.useEffect(() => {
+        setLoading(true)
         agent.Customers.list().then((res) => {
             setCustomersList(res)
             setLoading(false);
-            // console.log(
-            //     res.forEach((item) => {
-            //         if (item?.bids?.length > 0) {
-            //             console.log(item['bids'].reduce((prev, current) => (prev.amount > current.amount) ? prev : current))
-            //         }
 
-            //     })
-            //     // 
-            // )
         }).catch((err) => console.error(err))
     }, [filterType]);
     let options = {
@@ -46,6 +43,13 @@ const CustomersList = () => {
         paginationTotalRenderer: customTotal,
         showTotal: true
     };
+    const rowEvents = {
+        onClick: (e, row, rowIndex) => {
+            setCustDetails(row);
+            setRedirect(true);
+        },
+
+    };
     const columns = [
         {
             dataField: 'firstname',
@@ -53,15 +57,10 @@ const CustomersList = () => {
             headerClasses: 'text-primary pl-2',
             classes: 'py-2 align-middle pl-2',
             formatter: (dataField, row) => {
-                return (<Link to={{
-                    pathname: `/customer-detail/${row['id']}`, state: {
-                        custId: row['id'],
-                        custDetails: row
-                    }
-                }} className="text-decoration-none">
+                return (<div className="text-primary" >
                     <img src={row['avatarUrl']} style={{ width: '10%' }} alt="cust_img" className="mx-2" />
                     {row['firstname'] + ' ' + row['lastname']}
-                </Link>)
+                </div>)
             }
         },
         {
@@ -92,17 +91,19 @@ const CustomersList = () => {
             formatter: (dataField, row) => {
                 const max = row['bids']?.length > 0 ? row['bids'].reduce((prev, current) => (prev.amount > current.amount) ? prev : current) : '-';
                 const min = row['bids']?.length > 0 ? row['bids'].reduce((prev, current) => (prev.amount < current.amount) ? prev : current) : '-';
-                console.log(Number(filterType) === 1)
                 return (
                     <>
-                        {Number(filterType) === 1 ?
-                            <div className="d-flex justify-content-center">
-                                <div className="text-primary"> Max:</div>&nbsp;{max !== '-' ? max['amount'] : 'NA'}
-                            </div> :
-                            <div className="d-flex justify-content-center">
-                                <div className="text-primary"> Min:</div>&nbsp;{min !== '-' ? min['amount'] : 'NA'}
-                            </div>
-                        }
+                        {Number(filterType) === 0 ?
+                            <>
+                                <div className="d-flex justify-content-center">
+                                    <div className="text-primary"> Max:</div>&nbsp;{max !== '-' ? max['amount'] : 'NA'}
+                                </div>
+                                <div className="d-flex justify-content-center">
+                                    <div className="text-primary"> Min:</div>&nbsp;{min !== '-' ? min['amount'] : 'NA'}
+                                </div>
+                            </>
+                            : <BidFormatter max={max} min={min} />}
+
                     </>
                 )
             }
@@ -110,13 +111,30 @@ const CustomersList = () => {
         },
 
     ];
-    // { console.log(Number(filterType) === 1) }
-
+    const BidFormatter = (props) => {
+        return (<>
+            {Number(filterType) === 1 ?
+                <div className="d-flex justify-content-center">
+                    <div className="text-primary"> Max:</div>&nbsp;{props.max !== '-' ? props.max['amount'] : 'NA'}
+                </div> :
+                <div className="d-flex justify-content-center">
+                    <div className="text-primary"> Min:</div>&nbsp;{props.min !== '-' ? props.min['amount'] : 'NA'}
+                </div>
+            }
+        </>)
+    }
+    if (redirect) {
+        return <Redirect to={{
+            pathname: `/customer-detail/${custDetails['id']}`, state: {
+                custDetails: custDetails
+            }
+        }} />
+    }
     const FiltersList = [
-        { id: 0, label: 'both' },
+        { id: 0, label: 'Both' },
         { id: 1, label: 'Maximum Bid' },
         { id: 2, label: 'Minimum Bid' },
-    ] 
+    ]
 
     return (
         <React.Fragment>
@@ -163,6 +181,7 @@ const CustomersList = () => {
                                                             {...props.baseProps}
                                                             {...paginationTableProps}
                                                             bootstrap4
+                                                            rowClasses={'cursor-pointer'}
                                                             classes={"table-dashboard fs--1 border-bottom border-200 mb-0 table-dashboard "}
                                                             headerClasses="bg-200 text-900 border-y border-200"
                                                             filterPosition="top"
@@ -170,6 +189,7 @@ const CustomersList = () => {
                                                             // condensed
                                                             hover
                                                             keyField="id"
+                                                            rowEvents={rowEvents}
                                                         />
                                                     </div>
                                                 </div>
